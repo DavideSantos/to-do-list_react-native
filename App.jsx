@@ -1,12 +1,25 @@
 import { useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, View, FlatList, Button } from "react-native";
+import { StatusBar } from "expo-status-bar";
 // import di componenti Custom
 import GoalItem from "./components/GoalItem";
 import GoalInput from "./components/GoalInput";
 
 export default function App() {
+  // State Hooks dove viene salvato la visibilità del Modal
+  const [modalIsVisible, setModalIsVisible] = useState(false);
   // State Hooks dove vengono salvati i goal
   const [courseGoals, setCourseGoals] = useState([]);
+
+  // Handler per attivare il Modal
+  const startAddGoalHandler = () => {
+    setModalIsVisible(true);
+  };
+
+  // Handler per chiudere il Modal
+  const endAddGoalHandler = () => {
+    setModalIsVisible(false);
+  };
 
   // Handler per l'array di goal
   const addGoalHandler = (enteredGoalText) => {
@@ -14,6 +27,7 @@ export default function App() {
       ...currentCourseGoals,
       { text: enteredGoalText, id: Math.random().toString() },
     ]);
+    endAddGoalHandler();
   };
 
   // Handler per cancellare il goal
@@ -25,8 +39,13 @@ export default function App() {
 
   return (
     <>
+      <StatusBar style="light" />
       <View style={styles.appContainer}>
-        <GoalInput onAddGoal={addGoalHandler} />
+        <GoalInput
+          visible={modalIsVisible}
+          onAddGoal={addGoalHandler}
+          onCancel={endAddGoalHandler}
+        />
         <View style={styles.goalsContainer}>
           <FlatList
             data={courseGoals}
@@ -45,6 +64,11 @@ export default function App() {
             alwaysBounceVertical={false}
           />
         </View>
+        <Button
+          title="Add New Goal"
+          color="#a065ec"
+          onPress={startAddGoalHandler}
+        />
       </View>
     </>
   );
